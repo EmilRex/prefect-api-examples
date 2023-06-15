@@ -1,0 +1,17 @@
+name: Cancel long running flows
+description: Cancel any flow run after an hour of execution
+trigger:
+  match:
+    "prefect.resource.id": "prefect.flow-run.*"
+  match_related: {}
+  after:
+    - prefect.flow-run.Failed
+  expect:
+    - "prefect.flow-run.*"
+  for_each:
+    - "prefect.resource.id"
+  posture: Proactive
+  threshold: 1
+  within: 3600
+actions:
+  - type: "cancel-flow-run"
